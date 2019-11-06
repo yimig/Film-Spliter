@@ -55,18 +55,19 @@ namespace film_spliter
         public override string ToString()
         {
             return
-                $"   TRACK {this.TrackId} AUDIO\r\n    TITLE \"{this.Title}\"\r\n    PERFORMER \"{this.Performer}\"\r\n    INDEX 00 {this.StartTick}\r\n    INDEX 01 {this.EndTick}\r\n";
+                $"   TRACK {this.TrackId} AUDIO\r\n    TITLE \"{this.Title}\"\r\n    PERFORMER \"{this.Performer}\"\r\n    ";
         }
 
         public static string ConvertCues(List<Cue> cues,CueInfo cueInfo,string fileName)
         {
             string result = "PERFORMER \"" + cueInfo.Performer + "\"\r\nTITLE \"" + cueInfo.Title + "\"\r\nFILE \"" +
                             fileName + "\" WAVE\r\n";
-            foreach (var cue in cues)
+            result += cues[0].ToString() + "INDEX 01 00:00:00\r\n";
+            for (int i = 1; i < cues.Count; i++)
             {
-                result += cue.ToString();
+                result += cues[i] + "INDEX 00 " + cues[i - 1].EndTick + "\r\n    " + "INDEX 01 " +
+                          cues[i].StartTick + "\r\n";
             }
-
             return result;
         }
     }

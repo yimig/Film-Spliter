@@ -83,5 +83,15 @@ namespace film_spliter
             Chinese = rowFragments[2];
             English = rowFragments[3];
         }
+
+        public TimeSpan GetStartTime()
+        {
+            return new TimeSpan(0,StartTick.Hour,StartTick.Min,StartTick.Sec,StartTick.Minsec);
+        }
+
+        public TimeSpan GetEndTime()
+        {
+            return new TimeSpan(0,EndTick.Hour,EndTick.Min,EndTick.Sec,EndTick.Minsec);
+        }
     }
 }

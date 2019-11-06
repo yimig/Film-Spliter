@@ -10,27 +10,38 @@ namespace film_spliter
 {
     class Program
     {
-        const string PERFORMER = "YYesTs";
-        private const string CUE_TARGET_FILE_NAME = "Forrest.Gump.1994.REMASTERED.1080p.BluRay.X264-AMIABLE";
+        //const string PERFORMER = "YYesTs";
+        //private const string CUE_TARGET_FILE_NAME = "Forrest.Gump.1994.REMASTERED.1080p.BluRay.X264-AMIABLE";
         private const string CUE_AND_LANDB_NAME = "Forrest.Gump.1994.REMASTERED.1080p.BluRay.X264-AMIABLE";
-        private static string filePath;
+        private static string captionFilePath;
+        private static string musicFilePath;
         static void Main(string[] args)
         {
-            Console.WriteLine("Pull a .srt file to here and type enter:");
-            filePath = Console.ReadLine();
+            Console.WriteLine("Pull a captions file (*.srt) to here and type enter:");
+            captionFilePath = Console.ReadLine();
             List<Captions> captionses = GetCaptions();
             int[] fileId=new int[captionses.Count+1];
             for (int i = 0; i < captionses.Count; i++) fileId[i] = i + 1;
-            List<Cue> cues = GetCues(captionses,fileId);
+            //List<Cue> cues = GetCues(captionses,fileId);
             List<LanguageData> lanDB = GetLanauageDB(captionses, fileId);
-            WriteFile(cues);
+            //WriteFile(cues);
             WriteDB(lanDB);
+            Console.WriteLine("Database create complete,pull the music file(*.mp3) to here and type enter:");
+            musicFilePath = Console.ReadLine();
+            WriteWave(fileId, captionses);
         }
 
+        private static void WriteWave(int[] fileId, List<Captions> captionses)
+        {
+            for (int i = 0; i < captionses.Count; i++)
+            {
+                Spliter.TrimMp3File(musicFilePath,Path.GetDirectoryName(musicFilePath)+"\\"+fileId[i]+".wav",captionses[i].GetStartTime(),captionses[i].GetEndTime());
+            }
+        }
 
         private static List<Captions> GetCaptions()
         {
-            FileStream stream = new FileStream(filePath, FileMode.Open);
+            FileStream stream = new FileStream(captionFilePath, FileMode.Open);
             List<Captions> captionses = new List<Captions>();
             if (stream.CanRead)
             {
@@ -42,38 +53,41 @@ namespace film_spliter
                 foreach (string s in tempStrings)
                 {
                     if (s != "") captionses.Add(new Captions(s));
+                    if(captionses.Count==50)break;
                 }
             }
             return captionses;
         }
 
-        private static List<Cue> GetCues(List<Captions> captionses, int[] fileId)
-        {
-            List<Cue> cues = new List<Cue>();
-            List<CueInfo> infos = new List<CueInfo>();
 
-            for (int i = 0; i < captionses.Count; i++)
-            {
-                infos.Add(new CueInfo(fileId[i].ToString(), PERFORMER));
-            }
+        
+        //private static List<Cue> GetCues(List<Captions> captionses, int[] fileId)
+        //{
+        //    List<Cue> cues = new List<Cue>();
+        //    List<CueInfo> infos = new List<CueInfo>();
 
-            for (int i = 0; i < captionses.Count; i++)
-            {
-                cues.Add(new Cue(captionses[i], infos[i]));
-            }
+        //    for (int i = 0; i < captionses.Count; i++)
+        //    {
+        //        infos.Add(new CueInfo(fileId[i].ToString(), PERFORMER));
+        //    }
 
-            return cues;
-        }
+        //    for (int i = 0; i < captionses.Count; i++)
+        //    {
+        //        cues.Add(new Cue(captionses[i], infos[i]));
+        //    }
 
-        private static void WriteFile(List<Cue> cues)
-        {
-            CueInfo cueInfo = new CueInfo("Forrest. Forrest Gump", PERFORMER);
-            FileStream wfs = new FileStream(Path.GetDirectoryName(filePath) + "\\"+CUE_AND_LANDB_NAME+".cue", FileMode.Create);
-            StreamWriter writer = new StreamWriter(wfs);
-            writer.Write(Cue.ConvertCues(cues, cueInfo, CUE_TARGET_FILE_NAME));
-            writer.Close();
-            wfs.Close();
-        }
+        //    return cues;
+        //}
+
+        //private static void WriteFile(List<Cue> cues)
+        //{
+        //    CueInfo cueInfo = new CueInfo("Forrest. Forrest Gump", PERFORMER);
+        //    FileStream wfs = new FileStream(Path.GetDirectoryName(captionFilePath) + "\\"+CUE_AND_LANDB_NAME+".cue", FileMode.Create);
+        //    StreamWriter writer = new StreamWriter(wfs);
+        //    writer.Write(Cue.ConvertCues(cues, cueInfo, CUE_TARGET_FILE_NAME));
+        //    writer.Close();
+        //    wfs.Close();
+        //}
 
         private static List<LanguageData> GetLanauageDB(List<Captions> captionses, int[] fileId)
         {
@@ -88,7 +102,7 @@ namespace film_spliter
 
         private static void WriteDB(List<LanguageData> lanDB)
         {
-            FileStream wfs = new FileStream(Path.GetDirectoryName(filePath) + "\\"+CUE_AND_LANDB_NAME+".db", FileMode.Create);
+            FileStream wfs = new FileStream(Path.GetDirectoryName(captionFilePath) + "\\"+CUE_AND_LANDB_NAME+".db", FileMode.Create);
             StreamWriter writer = new StreamWriter(wfs);
             writer.Write(LanguageData.ConvertLanDB(lanDB));
             writer.Close();

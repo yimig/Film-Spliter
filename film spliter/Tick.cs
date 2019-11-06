@@ -54,12 +54,22 @@ namespace film_spliter
 
         public override string ToString()
         {
-            return AddDigital(Hour) + ":" + AddDigital(Min) + ":" + AddDigital(Sec) + "," + Minsec;
+            return HyperTime() + ":" + AddDigital(Sec) + ":" + SubDigital(Minsec);
         }
 
         private string AddDigital(int num)
         {
             return num < 10 ? "0" + num : num.ToString();
+        }
+
+        private string SubDigital(int num)
+        {
+            return num > 99 ? (num / 10).ToString() : num.ToString();
+        }
+
+        private string HyperTime()
+        {
+            return AddDigital(Hour * 60 + Min);
         }
     }
 }
