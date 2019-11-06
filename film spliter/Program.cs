@@ -20,6 +20,7 @@ namespace film_spliter
             Console.WriteLine("Pull a captions file (*.srt) to here and type enter:");
             captionFilePath = Console.ReadLine();
             List<Captions> captionses = GetCaptions();
+            captionses=Captions.MergeCaptions(captionses);
             int[] fileId=new int[captionses.Count+1];
             for (int i = 0; i < captionses.Count; i++) fileId[i] = i + 1;
             //List<Cue> cues = GetCues(captionses,fileId);
