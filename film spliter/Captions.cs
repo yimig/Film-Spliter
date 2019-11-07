@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace film_spliter
@@ -112,6 +113,7 @@ namespace film_spliter
             List<List<Captions>> ctrQueue=new List<List<Captions>>();
             List<Captions> subQueue=null;
             bool flag = true;
+            captionses = CleanCaptions(captionses);
             for (int i = 0; i < captionses.Count; i++)
             {
                 if (!(captionses[i].English.Contains('.') || captionses[i].English.Contains('?') ||
@@ -141,6 +143,22 @@ namespace film_spliter
 
             return StartMerge(ctrQueue, captionses);
 
+        }
+
+        private static List<Captions> CleanCaptions(List<Captions> captionses)
+        {
+            List<Captions> removeList = new List<Captions>();
+            foreach (var captions in captionses)
+            {
+                if (captions.English == ""||Regex.IsMatch(captions.English, "[\u4e00-\u9fa5]"))removeList.Add(captions);
+            }
+
+            foreach (var removeCaptions in removeList)
+            {
+                captionses.Remove(removeCaptions);
+            }
+
+            return captionses;
         }
 
         private static List<Captions> StartMerge(List<List<Captions>> ctrQueue,List<Captions> rowCaptionses)

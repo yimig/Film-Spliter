@@ -8,19 +8,12 @@ namespace film_spliter
 {
     class LanguageData
     {
-        private int fileId, trackId;
-        private string english, chinese;
+        private string english, chinese,fileId;
 
-        public int FileId
+        public string FileId
         {
             get => fileId;
             set => fileId = value;
-        }
-
-        public int TrackId
-        {
-            get => trackId;
-            set => trackId = value;
         }
 
         public string English
@@ -35,17 +28,16 @@ namespace film_spliter
             set => chinese = value;
         }
 
-        public LanguageData(Captions captions, int fileId)
+        public LanguageData(Captions captions, string fileId)
         {
             FileId = fileId;
-            TrackId = captions.Id;
             English = captions.English;
             Chinese = captions.Chinese;
         }
 
         public override string ToString()
         {
-            return FileId + "|" + trackId + "|" + english + "|" + chinese + "\n";
+            return FileId + "|" + english + "|" + chinese + "\n";
         }
 
         public static string ConvertLanDB(List<LanguageData> lanDB)
